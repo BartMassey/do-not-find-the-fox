@@ -127,7 +127,13 @@ fn foxed(board: &Board) -> bool {
     false
 }
 
-fn play(on_move: Player, board: &mut Board, bag: &mut Bag, ttable: &mut TTable) -> Outcome {
+fn play(
+    level: usize,
+    on_move: Player,
+    board: &mut Board,
+    bag: &mut Bag,
+    ttable: &mut TTable,
+) -> Outcome {
     if bag.is_empty() {
         return Outcome::Draw;
     }
@@ -139,6 +145,9 @@ fn play(on_move: Player, board: &mut Board, bag: &mut Bag, ttable: &mut TTable) 
     let opp = on_move.opponent();
     let mut result = Outcome::Win(opp);
 
+    if level <= 4 {
+        println!("{level} {board:?}");
+    }
     for r in 0..4 {
         for c in 0..4 {
             if board[r][c].is_some() {
@@ -151,7 +160,7 @@ fn play(on_move: Player, board: &mut Board, bag: &mut Bag, ttable: &mut TTable) 
                 bag.remove(&p);
                 board[r][c] = Some(p);
                 if !foxed(board) {
-                    let outcome = play(opp, board, bag, ttable);
+                    let outcome = play(level + 1, opp, board, bag, ttable);
                     match outcome {
                         Outcome::Win(w) if w == on_move => {
                             board[r][c] = None;
@@ -181,6 +190,6 @@ fn main() {
         .collect();
     let mut ttable = HashMap::new();
     assert_eq!(16, bag.len());
-    let outcome = play(Player::P1, &mut board, &mut bag, &mut ttable);
+    let outcome = play(0, Player::P1, &mut board, &mut bag, &mut ttable);
     println!("{:?}", outcome);
 }
