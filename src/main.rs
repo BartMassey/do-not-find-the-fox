@@ -2,6 +2,8 @@
 //!
 //! https://donotfindthefox.com/
 
+use std::collections::HashMap;
+
 use hashbag::HashBag;
 
 /// Letter tiles for the game.
@@ -47,6 +49,8 @@ impl std::fmt::Display for Outcome {
 type Board = [[Option<Tile>; 4]; 4];
 
 type Bag = HashBag<Tile>;
+
+type TTable = HashMap<Board, Outcome>;
 
 fn foxed(board: &Board) -> bool {
     let fox_tiles = [Some(Tile::F), Some(Tile::O), Some(Tile::X)];
@@ -123,9 +127,13 @@ fn foxed(board: &Board) -> bool {
     false
 }
 
-fn play(on_move: Player, board: &mut Board, bag: &mut Bag) -> Outcome {
+fn play(on_move: Player, board: &mut Board, bag: &mut Bag, ttable: &mut TTable) -> Outcome {
     if bag.is_empty() {
         return Outcome::Draw;
+    }
+
+    if let Some(&outcome) = ttable.get(board) {
+        return outcome;
     }
 
     let opp = on_move.opponent();
@@ -143,11 +151,12 @@ fn play(on_move: Player, board: &mut Board, bag: &mut Bag) -> Outcome {
                 bag.remove(&p);
                 board[r][c] = Some(p);
                 if !foxed(board) {
-                    let outcome = play(opp, board, bag);
+                    let outcome = play(opp, board, bag, ttable);
                     match outcome {
                         Outcome::Win(w) if w == on_move => {
                             board[r][c] = None;
                             bag.insert(p);
+                            ttable.insert(board.clone(), outcome);
                             return outcome;
                         }
                         Outcome::Draw => {
@@ -161,6 +170,7 @@ fn play(on_move: Player, board: &mut Board, bag: &mut Bag) -> Outcome {
             }
         }
     }
+    ttable.insert(board.clone(), result);
     result
 }
 
@@ -169,7 +179,8 @@ fn main() {
     let mut bag: Bag = [(Tile::F, 5), (Tile::O, 6), (Tile::X, 5)]
         .into_iter()
         .collect();
+    let mut ttable = HashMap::new();
     assert_eq!(16, bag.len());
-    let outcome = play(Player::P1, &mut board, &mut bag);
+    let outcome = play(Player::P1, &mut board, &mut bag, &mut ttable);
     println!("{:?}", outcome);
 }
