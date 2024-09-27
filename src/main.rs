@@ -52,42 +52,27 @@ fn foxed(board: &Board) -> bool {
     let fox_tiles = [Some(Tile::F), Some(Tile::O), Some(Tile::X)];
     let fox = |c| c == fox_tiles;
 
+    #[allow(clippy::identity_op)]
     for r0 in 0..4 {
         for c0 in 0..4 {
             if r0 <= 1 {
-                let cand = [
-                    board[r0 + 0][c0],
-                    board[r0 + 1][c0],
-                    board[r0 + 2][c0],
-                ];
+                let cand = [board[r0 + 0][c0], board[r0 + 1][c0], board[r0 + 2][c0]];
                 if fox(cand) {
                     return true;
                 }
 
-                let cand = [
-                    board[r0 + 2][c0],
-                    board[r0 + 1][c0],
-                    board[r0 + 0][c0],
-                ];
+                let cand = [board[r0 + 2][c0], board[r0 + 1][c0], board[r0 + 0][c0]];
                 if fox(cand) {
                     return true;
                 }
             }
             if c0 <= 1 {
-                let cand = [
-                    board[r0][c0 + 0],
-                    board[r0][c0 + 1],
-                    board[r0][c0 + 2],
-                ];
+                let cand = [board[r0][c0 + 0], board[r0][c0 + 1], board[r0][c0 + 2]];
                 if fox(cand) {
                     return true;
                 }
 
-                let cand = [
-                    board[r0][c0 + 2],
-                    board[r0][c0 + 1],
-                    board[r0][c0 + 0],
-                ];
+                let cand = [board[r0][c0 + 2], board[r0][c0 + 1], board[r0][c0 + 0]];
                 if fox(cand) {
                     return true;
                 }
@@ -142,7 +127,7 @@ fn play(on_move: Player, board: &mut Board, bag: &mut Bag) -> Outcome {
     if bag.is_empty() {
         return Outcome::Draw;
     }
-    
+
     let opp = on_move.opponent();
     let mut result = Outcome::Win(opp);
 
