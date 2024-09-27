@@ -48,8 +48,94 @@ type Board = [[Option<Tile>; 4]; 4];
 
 type Bag = HashBag<Tile>;
 
-fn foxed(_board: &Board) -> bool {
-    todo!()
+fn foxed(board: &Board) -> bool {
+    let fox_tiles = [Some(Tile::F), Some(Tile::O), Some(Tile::X)];
+    let fox = |c| c == fox_tiles;
+
+    for r0 in 0..4 {
+        for c0 in 0..4 {
+            if r0 <= 1 {
+                let cand = [
+                    board[r0 + 0][c0],
+                    board[r0 + 1][c0],
+                    board[r0 + 2][c0],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+
+                let cand = [
+                    board[r0 + 2][c0],
+                    board[r0 + 1][c0],
+                    board[r0 + 0][c0],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+            }
+            if c0 <= 1 {
+                let cand = [
+                    board[r0][c0 + 0],
+                    board[r0][c0 + 1],
+                    board[r0][c0 + 2],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+
+                let cand = [
+                    board[r0][c0 + 2],
+                    board[r0][c0 + 1],
+                    board[r0][c0 + 0],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+            }
+
+            if r0 <= 1 && c0 <= 1 {
+                let cand = [
+                    board[r0 + 0][c0 + 0],
+                    board[r0 + 1][c0 + 1],
+                    board[r0 + 2][c0 + 2],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+
+                let cand = [
+                    board[r0 + 2][c0 + 2],
+                    board[r0 + 1][c0 + 1],
+                    board[r0 + 0][c0 + 0],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+            }
+
+            if r0 >= 2 && c0 >= 2 {
+                let cand = [
+                    board[r0 - 0][c0 - 0],
+                    board[r0 - 1][c0 - 1],
+                    board[r0 - 2][c0 - 2],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+
+                let cand = [
+                    board[r0 - 2][c0 - 2],
+                    board[r0 - 1][c0 - 1],
+                    board[r0 - 0][c0 - 0],
+                ];
+                if fox(cand) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
 }
 
 fn play(on_move: Player, board: &mut Board, bag: &mut Bag) -> Outcome {
